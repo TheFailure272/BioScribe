@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test BioScribe API</title>
+</head>
+<body>
+    <h1>Test BioScribe API Connection</h1>
+    <button onclick="testHealth()">Test Health</button>
+    <button onclick="testProteinAnalysis()">Test Protein Analysis</button>
+    <pre id="output"></pre>
+
+    <script>
+        const output = document.getElementById('output');
+
+        async function testHealth() {
+            output.textContent = 'Testing health endpoint...\n';
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                output.textContent += 'SUCCESS!\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent += 'ERROR: ' + error.message;
+            }
+        }
+
+        async function testProteinAnalysis() {
+            output.textContent = 'Testing protein analysis endpoint...\n';
+            try {
+                const response = await fetch('http://localhost:8000/api/protein/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sequence: 'MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVKALPDAQFEVVHSLAKWKRQTLGQHDFSAGEGLYTHMKALRPDEDRLSPLHSVYVDQWDWERVMGDGERQFSTLKSTVEAIWAGIKATEAAVSEEFGLAPFLPDQIHFVHSQELLSRYPDLDAKGRERAIAKDLGAVFLVGIGGKLSDGHRHDVRAPDYDDWSTPSELGHAGLNGDILVWNPVLEDAFELSSMGIRVDADTLKHQLALTGDEDRLELEWHQALLRGEMPQTIGGGIGQSRLTMLLLQLPHIGQVQAGVWPAAVRESVPSLL',
+                        name: 'Test Protein',
+                        organism: 'Test'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    output.textContent += 'SUCCESS!\n' + JSON.stringify(data, null, 2);
+                } else {
+                    const error = await response.text();
+                    output.textContent += 'HTTP ERROR ' + response.status + ':\n' + error;
+                }
+            } catch (error) {
+                output.textContent += 'FETCH ERROR: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

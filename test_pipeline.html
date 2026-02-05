@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BioScribe Pipeline Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
+        .success { border-color: #28a745; background: #d4edda; }
+        .error { border-color: #dc3545; background: #f8d7da; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>🧬 BioScribe Pipeline Test</h1>
+    <p>This page tests the complete pipeline API directly.</p>
+    
+    <button onclick="testPipeline()">Test Complete Pipeline</button>
+    <button onclick="testHealth()">Test Backend Health</button>
+    <button onclick="clearResults()">Clear Results</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        async function testHealth() {
+            log('Testing backend health...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                log(`✅ Backend Health: ${data.status} (v${data.version})`, 'success');
+                log(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'success');
+            } catch (error) {
+                log(`❌ Health Check Failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testPipeline() {
+            log('Testing complete pipeline...', 'info');
+            
+            const requestData = {
+                sequence: "PQITLWQRPLVTIKIGGQLKEALLDTGADDTVLEEMSLPGRWKPKMIGGIGGFIKVRQYDQILIEICGHKAIGTVLVGPTPVNIIGRNLLTQIGCTLNF",
+                name: "HIV-1 Protease",
+                organism: "HIV-1",
+                num_candidates: 5,
+                include_temporal_dynamics: true,
+                include_causal_validation: false,
+                include_green_chemistry: true
+            };
+            
+            log(`Request: <pre>${JSON.stringify(requestData, null, 2)}</pre>`, 'info');
+            
+            try {
+                log('Sending request to /api/pipeline/complete...', 'info');
+                
+                const response = await fetch(`${API_BASE}/pipeline/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                log(`Response Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Pipeline completed successfully!', 'success');
+                    log(`Session ID: ${data.session_id}`, 'success');
+                    log(`Total Candidates: ${data.total_candidates}`, 'success');
+                    log(`Has Results: ${!!data.results}`, 'success');
+                    
+                    if (data.results) {
+                        log(`Results Keys: ${Object.keys(data.results).join(', ')}`, 'success');
+                        if (data.results.overall_executive_summary) {
+                            const summary = data.results.overall_executive_summary;
+                            log(`Pipeline Statistics: ${JSON.stringify(summary.pipeline_statistics, null, 2)}`, 'success');
+                        }
+                    }
+                    
+                    log(`<details><summary>Full Response</summary><pre>${JSON.stringify(data, null, 2)}</pre></details>`, 'success');
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    log(`❌ Pipeline failed: ${JSON.stringify(errorData, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Network/JavaScript Error: ${error.message}`, 'error');
+                log(`Error Type: ${error.name}`, 'error');
+                log(`Stack: ${error.stack}`, 'error');
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            log('🧬 BioScribe Pipeline Test Page Loaded', 'info');
+            log('Click "Test Backend Health" first, then "Test Complete Pipeline"', 'info');
+        };
+    </script>
+</body>
+</html>
