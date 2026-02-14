@@ -42,73 +42,73 @@ export default function DeNovoDesignPage() {
                         </button>
                     </Link>
                     <div className="flex-1">
-                        <h 1 className="text-5xl font-light text-slate-900 mb-2">De Novo Molecular Design</h1>
-                    <p className="text-xl font-light text-slate-600">AI-generated molecules from scratch</p>
-                </div>
-            </div>
-
-            <Card className="mb-8 border-none shadow-2xl bg-white/60">
-                <CardContent className="p-8">
-                    <button onClick={runDesign} disabled={isRunning}
-                        className="w-full px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-light shadow-2xl">
-                        {isRunning ? 'Generating Molecules...' : 'Generate De Novo Molecules'}
-                    </button>
-                </CardContent>
-            </Card>
-
-            {results && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                    <div className="grid grid-cols-4 gap-6">
-                        <Card className="border-none shadow-xl bg-white/60">
-                            <CardContent className="p-6 text-center">
-                                <Atom className="w-8 h-8 text-violet-600 mx-auto mb-2" />
-                                <div className="text-3xl font-light">{results.molecules?.length || 0}</div>
-                                <div className="text-sm text-slate-600">Generated</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-none shadow-xl bg-white/60">
-                            <CardContent className="p-6 text-center">
-                                <Sparkles className="w-8 h-8 text-violet-600 mx-auto mb-2" />
-                                <div className="text-3xl font-light">{(results.avg_novelty * 100 || 0).toFixed(0)}%</div>
-                                <div className="text-sm text-slate-600">Novelty</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-none shadow-xl bg-white/60">
-                            <CardContent className="p-6 text-center">
-                                <div className="text-3xl font-light">{(results.avg_qed || 0).toFixed(2)}</div>
-                                <div className="text-sm text-slate-600">QED Score</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-none shadow-xl bg-white/60">
-                            <CardContent className="p-6 text-center">
-                                <div className="text-3xl font-light">{results.synthesizable_count || 0}</div>
-                                <div className="text-sm text-slate-600">Synthesizable</div>
-                            </CardContent>
-                        </Card>
+                        <h1 className="text-5xl font-light text-slate-900 mb-2">De Novo Molecular Design</h1>
+                        <p className="text-xl font-light text-slate-600">AI-generated molecules from scratch</p>
                     </div>
+                </div>
 
-                    <Card className="border-none shadow-xl bg-white/60">
-                        <CardHeader>
-                            <CardTitle>Top Candidates</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-3">
-                                {results.molecules?.slice(0, 10).map((mol: any, idx: number) => (
-                                    <div key={idx} className="p-4 rounded-xl bg-gradient-to-r from-violet-50 to-fuchsia-50">
-                                        <div className="font-mono text-sm mb-2">{mol.smiles}</div>
-                                        <div className="flex gap-4 text-sm">
-                                            <span>MW: {mol.properties.molecular_weight.toFixed(1)}</span>
-                                            <span>LogP: {mol.properties.logp.toFixed(2)}</span>
-                                            <span>QED: {mol.qed_score.toFixed(2)}</span>
+                <Card className="mb-8 border-none shadow-2xl bg-white/60">
+                    <CardContent className="p-8">
+                        <button onClick={runDesign} disabled={isRunning}
+                            className="w-full px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-light shadow-2xl">
+                            {isRunning ? 'Generating Molecules...' : 'Generate De Novo Molecules'}
+                        </button>
+                    </CardContent>
+                </Card>
+
+                {results && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                        <div className="grid grid-cols-4 gap-6">
+                            <Card className="border-none shadow-xl bg-white/60">
+                                <CardContent className="p-6 text-center">
+                                    <Atom className="w-8 h-8 text-violet-600 mx-auto mb-2" />
+                                    <div className="text-3xl font-light">{results.molecules?.length || 0}</div>
+                                    <div className="text-sm text-slate-600">Generated</div>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-none shadow-xl bg-white/60">
+                                <CardContent className="p-6 text-center">
+                                    <Sparkles className="w-8 h-8 text-violet-600 mx-auto mb-2" />
+                                    <div className="text-3xl font-light">{(results.avg_novelty * 100 || 0).toFixed(0)}%</div>
+                                    <div className="text-sm text-slate-600">Novelty</div>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-none shadow-xl bg-white/60">
+                                <CardContent className="p-6 text-center">
+                                    <div className="text-3xl font-light">{(results.avg_qed || 0).toFixed(2)}</div>
+                                    <div className="text-sm text-slate-600">QED Score</div>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-none shadow-xl bg-white/60">
+                                <CardContent className="p-6 text-center">
+                                    <div className="text-3xl font-light">{results.synthesizable_count || 0}</div>
+                                    <div className="text-sm text-slate-600">Synthesizable</div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <Card className="border-none shadow-xl bg-white/60">
+                            <CardHeader>
+                                <CardTitle>Top Candidates</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-3">
+                                    {results.molecules?.slice(0, 10).map((mol: any, idx: number) => (
+                                        <div key={idx} className="p-4 rounded-xl bg-gradient-to-r from-violet-50 to-fuchsia-50">
+                                            <div className="font-mono text-sm mb-2">{mol.smiles}</div>
+                                            <div className="flex gap-4 text-sm">
+                                                <span>MW: {mol.properties.molecular_weight.toFixed(1)}</span>
+                                                <span>LogP: {mol.properties.logp.toFixed(2)}</span>
+                                                <span>QED: {mol.qed_score.toFixed(2)}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            )}
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+            </div>
         </div>
-    </div >
-  );
+    );
 }
